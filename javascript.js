@@ -1,4 +1,4 @@
-var topics = ["Dwight Howard", "Joel Embiid", "Orlando Magic", "dunk", "Dikimbe Motumbo", "Kevin Durant", "crossover", "J.R. Smith", "Lakers"]
+var topics = ["Dwight Howard", "Joel Embiid", "Orlando Magic", "dunk", "dikembe mutombo", "Kevin Durant", "crossover", "J.R. Smith", "Lakers", "Space Jam"]
 var gifsNumber = 10
 
 function createButtons() {
@@ -19,6 +19,18 @@ $("#addInput").on("click", function(event) {
     createButtons();
 });
 
+$(document).keyup(function(event) {
+    console.log(event.key);
+    if (event.key === "Enter"){
+        var userText = $("#userInput").val().trim()
+        if (userText !== "") {
+            topics.push(userText);
+            $("#userInput").val("");
+            createButtons();
+        }
+    }
+});
+
 $(document).on("click", ".topic", function(){
     $("#gifsArea").empty();
     var currentTopic = $(this).text();
@@ -30,15 +42,25 @@ $(document).on("click", ".topic", function(){
         console.log(response)
         for (var i = 0; i < gifsNumber; i++) {
             var current = response.data[i]
-            var div = $("<div>");
-            var p = $("<p>").text(current.rating);
+            var div = $("<div>").addClass("gifHolder");
+            var p = $("<p>").text("Rating: " + current.rating);
             var gif = $("<img>");
-            gif.attr("src", current.url);
+            gif.attr("src", current.images.fixed_height_still.url);
+            gif.attr("data-still", current.images.fixed_height_still.url);
+            gif.attr("data-moving", current.images.fixed_height.url);
+            gif.addClass("changable");
             div.append(p).append(gif);
             $("#gifsArea").append(div);
-            console.log(current.url)
         }
       });
 });
+
+$(document).on("mouseenter", ".changable", function() {
+    $(this).attr("src", $(this).attr("data-moving"));
+});
+
+$(document).on("mouseleave", ".changable", function() {
+    $(this).attr("src", $(this).attr("data-still"));
+})
 
 createButtons();
